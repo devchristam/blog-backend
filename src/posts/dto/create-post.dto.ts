@@ -12,4 +12,7 @@ export class CreatePostDto {
 
 	@ApiProperty()
 	createtime: Date
+
+	@ApiProperty()
+	enable: boolean
 }

@@ -1,23 +1,25 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Document } from 'mongoose';
 
-export type PostDocument = Post & Document
+export type UserDocument = User & Document
 
 @Schema()
-export class Post {
+export class User {
+  @Prop({
+    required: true
+  })
+  name: string
+
+  @Prop({
+    required: true,
+    unique: true
+  })
+  loginname: string
 
   @Prop({
     required: true
   })
-  title: string
-
-  @Prop({
-    required: true
-  })
-  markdown: string
-
-  @Prop()
-  tags: string[]
+  password: string
 
   @Prop({
     default: Date.now
@@ -31,4 +33,5 @@ export class Post {
 
 }
 
-export const PostSchema = SchemaFactory.createForClass(Post)
+export const UserSchema = SchemaFactory.createForClass(User)
+
