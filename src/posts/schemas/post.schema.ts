@@ -1,5 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
-import { Document } from 'mongoose';
+import { Document, Schema as mongooseSchema } from 'mongoose';
+import { User } from '../../users/schemas/user.schema'
+import { Catalogue } from '../../catalogues/schemas/catalogue.schema'
 
 export type PostDocument = Post & Document
 
@@ -28,6 +30,16 @@ export class Post {
     default: true
   })
   enable: boolean
+
+  @Prop({
+    type: mongooseSchema.Types.ObjectId, ref: 'User'
+  })
+  createBy: User
+
+  @Prop({
+    type: mongooseSchema.Types.ObjectId, ref: 'Catalogue'
+  })
+  catalogue: Catalogue
 
 }
 
