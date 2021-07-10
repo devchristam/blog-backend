@@ -4,10 +4,16 @@ import { Model } from 'mongoose';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { Post, PostDocument } from './schemas/post.schema';
+import { User, UserDocument } from '../users/schemas/user.schema';
+import { Catalogue, CatalogueDocument } from '../catalogues/schemas/catalogue.schema';
 
 @Injectable()
 export class PostsService {
-  constructor(@InjectModel(Post.name) private postModel: Model<PostDocument>) { }
+  constructor(
+    @InjectModel(Post.name) private postModel: Model<PostDocument>,
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
+    @InjectModel(Catalogue.name) private catalogueModel: Model<CatalogueDocument>,
+  ) { }
 
   create(createPostDto: CreatePostDto) {
     // This action adds a new post

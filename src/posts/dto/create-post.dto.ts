@@ -15,4 +15,11 @@ export class CreatePostDto {
 
 	@ApiProperty()
 	enable: boolean
+
+	@ApiProperty()
+  catalogueID: string
+
+	@ApiProperty()
+  userID: string
+
 }

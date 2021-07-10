@@ -15,5 +15,4 @@ export class CreateUserDto {
 
   @ApiProperty()
   enable: boolean
-
 }
