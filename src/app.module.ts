@@ -5,7 +5,7 @@ import { PostsModule } from './posts/posts.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
-import { CataloguesModule } from './catalogues/catalogues.module';
+import { CategoryModule } from './categories/categories.module';
 
 @Module({
   imports: [
@@ -13,7 +13,7 @@ import { CataloguesModule } from './catalogues/catalogues.module';
     MongooseModule.forRoot(process.env.MONGODB_CONNECTION),
     PostsModule,
     UsersModule,
-    CataloguesModule,
+    CategoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],

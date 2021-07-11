@@ -5,14 +5,14 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { Post, PostDocument } from './schemas/post.schema';
 import { User, UserDocument } from '../users/schemas/user.schema';
-import { Catalogue, CatalogueDocument } from '../catalogues/schemas/catalogue.schema';
+import { Category, CategoryDocument } from '../categories/schemas/category.schema';
 
 @Injectable()
 export class PostsService {
   constructor(
     @InjectModel(Post.name) private postModel: Model<PostDocument>,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
-    @InjectModel(Catalogue.name) private catalogueModel: Model<CatalogueDocument>,
+    @InjectModel(Category.name) private categoryModel: Model<CategoryDocument>,
   ) { }
 
   create(createPostDto: CreatePostDto) {

@@ -1,10 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { Document } from 'mongoose';
 
-export type CatalogueDocument = Catalogue & Document
+export type CategoryDocument = Category & Document
 
 @Schema()
-export class Catalogue {
+export class Category {
   @Prop({
     required: true
   })
@@ -16,4 +16,4 @@ export class Catalogue {
   enable: boolean
 }
 
-export const CatalogueSchema = SchemaFactory.createForClass(Catalogue)
+export const CategorySchema = SchemaFactory.createForClass(Category)
