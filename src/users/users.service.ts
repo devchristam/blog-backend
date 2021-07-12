@@ -34,4 +34,14 @@ export class UsersService {
     // This action removes a #${id} user
     return this.userModel.findByIdAndRemove(id, { useFindAndModify: false })
   }
+
+  async seeding(){
+    const createdUser = new this.userModel({
+      "name": "admin",
+      "loginname": process.env.ADMIN_LOGINNAME,
+      "password": process.env.ADMIN_PASSWORD,
+      "enable": true
+    });
+    return await createdUser.save();
+  }
 }
