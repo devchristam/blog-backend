@@ -3,6 +3,13 @@ import { Document } from 'mongoose';
 
 export type UserDocument = User & Document
 
+export enum userPrivilege{
+  read = 0,
+  write = 1,
+  modify = 2,
+  admin = 3
+}
+
 @Schema()
 export class User {
   @Prop({
@@ -31,6 +38,10 @@ export class User {
   })
   enable: boolean
 
+  @Prop({
+    default: userPrivilege.read
+  })
+  privilege: userPrivilege
 }
 
 export const UserSchema = SchemaFactory.createForClass(User)

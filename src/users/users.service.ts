@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User, UserDocument } from './schemas/user.schema';
+import { User, UserDocument, userPrivilege } from './schemas/user.schema';
 
 @Injectable()
 export class UsersService {
@@ -40,7 +40,8 @@ export class UsersService {
       "name": "admin",
       "loginname": process.env.ADMIN_LOGINNAME,
       "password": process.env.ADMIN_PASSWORD,
-      "enable": true
+      "enable": true,
+      "privilege": userPrivilege.admin
     });
     return await createdUser.save();
   }
