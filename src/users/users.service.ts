@@ -9,12 +9,6 @@ import { User, UserDocument, userPrivilege } from './schemas/user.schema';
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) { }
 
-  create(createUserDto: CreateUserDto) {
-    // This action adds a new user
-    const createdUser = new this.userModel(createUserDto);
-    return createdUser.save();
-  }
-
   findAll() {
     // This action returns all users
     return this.userModel.find().exec()
