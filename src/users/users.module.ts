@@ -16,7 +16,6 @@ export class UsersModule implements NestModule{
       .apply(AuthMiddleware)
       .forRoutes(
         { path: 'users', method: RequestMethod.GET },
-        { path: 'users', method: RequestMethod.POST },
         { path: 'users/:id', method: RequestMethod.GET },
         { path: 'users/:id', method: RequestMethod.PATCH },
         { path: 'users/:id', method: RequestMethod.DELETE },
