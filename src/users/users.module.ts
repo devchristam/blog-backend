@@ -6,9 +6,12 @@ import { User, UserSchema } from './schemas/user.schema';
 import { AuthMiddleware } from '../middlewares/auth/auth.middleware';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: User.name, schema: UserSchema }])],
+  imports: [
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }])
+  ],
   controllers: [UsersController],
-  providers: [UsersService]
+  providers: [UsersService],
+  exports: [UsersService]
 })
 export class UsersModule implements NestModule{
   configure(consumer: MiddlewareConsumer) {

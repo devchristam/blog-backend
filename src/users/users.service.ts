@@ -18,6 +18,13 @@ export class UsersService {
     return this.userModel.findById(id)
   }
 
+  findByLoginname(loginname: string) {
+    // This action returns a ${id} user
+    return this.userModel.findOne({
+      loginname: loginname
+    })
+  }
+
   update(id: string, updateUserDto: UpdateUserDto) {
     // This action updates a ${id} user
     return this.userModel.findByIdAndUpdate(id, updateUserDto, { useFindAndModify: false })
