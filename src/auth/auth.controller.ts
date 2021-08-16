@@ -24,9 +24,9 @@ export class AuthController {
     return req.user;
   }
 
-  @Get('role')
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(userPrivilege.admin)
+  @Get('role')
   getHello2(@Request() req): string {
     return 'foobar';
   }
