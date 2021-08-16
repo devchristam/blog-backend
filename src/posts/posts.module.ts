@@ -1,11 +1,10 @@
-import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { PostsController } from './posts.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Post, PostSchema } from './schemas/post.schema';
 import { User, UserSchema } from '../users/schemas/user.schema';
 import { Category, CategorySchema } from '../categories/schemas/category.schema';
-import { AuthMiddleware } from '../middlewares/auth/auth.middleware';
 
 @Module({
   imports: [MongooseModule.forFeature([
@@ -16,14 +15,4 @@ import { AuthMiddleware } from '../middlewares/auth/auth.middleware';
   controllers: [PostsController],
   providers: [PostsService]
 })
-export class PostsModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(AuthMiddleware)
-      .forRoutes(
-        { path: 'posts', method: RequestMethod.POST },
-        { path: 'posts/:id', method: RequestMethod.PATCH },
-        { path: 'posts/:id', method: RequestMethod.DELETE },
-      );
-  }
-}
+export class PostsModule { }
