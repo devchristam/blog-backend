@@ -3,10 +3,11 @@ import { AuthGuard } from '@nestjs/passport';
 import { userPrivilege } from '../users/schemas/user.schema';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
-import { JwtAuthGuard } from './jwt-auth.guard';
-import { LocalAuthGuard } from './local-auth.guard';
-import { Roles } from './roles.decorator';
-import { RolesGuard } from './roles.guard';
+import { JwtAuthGuard } from './guard/jwt-auth.guard';
+import { LocalAuthGuard } from './guard/local-auth.guard';
+import { Roles } from './decorator/roles.decorator';
+import { RolesGuard } from './guard/roles.guard';
+import { User } from '../users/decorator/user.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -20,8 +21,8 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Get('protected')
-  getHello(@Request() req): string {
-    return req.user;
+  getHello(@Request() req, @User() user): string {
+    return user;
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
