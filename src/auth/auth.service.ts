@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
+import { jwtPayload } from './dto/JwtPayload.dto';
 
 @Injectable()
 export class AuthService {
@@ -15,6 +16,24 @@ export class AuthService {
     }
 
     return null
+  }
+
+  async validateJwtUserExist(payload: jwtPayload): Promise<boolean> {
+    const user = await this.userService.findOne(payload.sub)
+
+    if(!user){
+      return false
+    }
+
+    if(user.name !== payload.name){
+      return false
+    }
+
+    if(user.privilege !== payload.privilege){
+      return false
+    }
+
+    return true
   }
 
   async login(user: any){
