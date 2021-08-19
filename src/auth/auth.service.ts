@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { userPrivilege } from '../users/schemas/user.schema';
 import { UsersService } from '../users/users.service';
 import { jwtPayload } from './dto/JwtPayload.dto';
 
@@ -34,6 +35,20 @@ export class AuthService {
     }
 
     return true
+  }
+
+  async valideUserCanModify(userid: string, createby: string): Promise<boolean>{
+    const user = await this.userService.findOne(userid)
+
+    if(user.privilege == userPrivilege.admin){
+      return true
+    }
+
+    if(user.id === createby){
+      return true
+    }
+
+    return false
   }
 
   async login(user: any){
