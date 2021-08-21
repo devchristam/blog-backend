@@ -11,15 +11,5 @@ export class CreatePostDto {
 	tags: string[]
 
 	@ApiProperty()
-	createtime: Date
-
-	@ApiProperty()
-	enable: boolean
-
-	@ApiProperty()
   catalogueID: string
-
-	@ApiProperty()
-  userID: string
-
 }

@@ -6,6 +6,8 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { Post, PostDocument } from './schemas/post.schema';
 import { User, UserDocument } from '../users/schemas/user.schema';
 import { Category, CategoryDocument } from '../categories/schemas/category.schema';
+import { AuthService } from '../auth/auth.service';
+import { jwtUser } from '../auth/dto/jwtUser.dto';
 
 @Injectable()
 export class PostsService {
@@ -13,11 +15,16 @@ export class PostsService {
     @InjectModel(Post.name) private postModel: Model<PostDocument>,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     @InjectModel(Category.name) private categoryModel: Model<CategoryDocument>,
+    private readonly authService: AuthService
   ) { }
 
-  create(createPostDto: CreatePostDto) {
+  create(user: jwtUser, createPostDto: CreatePostDto) {
     // This action adds a new post
-    const createdPost = new this.postModel(createPostDto);
+    let createPost = {
+      ...createPostDto,
+      createBy: user.id
+    }
+    const createdPost = new this.postModel(createPost);
     return createdPost.save();
   }
 
@@ -31,7 +38,7 @@ export class PostsService {
     return this.postModel.findById(id)
   }
 
-  update(id: string, updatePostDto: UpdatePostDto) {
+  update(id: string, user: jwtUser, updatePostDto: UpdatePostDto) {
     // This action updates a ${id} post
     return this.postModel.findByIdAndUpdate(id, updatePostDto, { useFindAndModify: false })
   }
