@@ -24,17 +24,18 @@ export class PostsService {
       createBy: user
     }
     const createdPost = new this.postModel(createPost);
-    return createdPost.save();
+    const { _id } = await createdPost.save()
+    return await this.postModel.findOne(_id);
   }
 
   async findAll() {
     // This action returns all posts
-    return this.postModel.find().exec()
+    return await this.postModel.find().exec()
   }
 
   async findOne(id: string) {
     // This action returns a ${id} post
-    return this.postModel.findById(id)
+    return await this.postModel.findById(id)
   }
 
   async update(id: string, user: UserDocument, updatePostDto: UpdatePostDto) {
@@ -44,8 +45,8 @@ export class PostsService {
       return false
     }
 
-    let canModify = await this.authService.valideUserCanModify(user._id.toHexString(), updateTarget.id)
-    if(!canModify){
+    let canWrite = await this.authService.valideUserCanModify(user._id.toHexString(), updateTarget._id)
+    if(!canWrite){
       return false
     }
 
@@ -59,8 +60,22 @@ export class PostsService {
     return await this.postModel.findById(_id)
   }
 
-  async remove(id: string) {
+  async remove(user: UserDocument ,id: string): Promise<boolean> {
     // This action removes a ${id} post
-    return this.postModel.findByIdAndRemove(id, { useFindAndModify: false })
+    let removeTarget = await this.findOne(id)
+    if(!removeTarget){
+      return false
+    }
+
+    let canModify = await this.authService.valideUserCanModify(user._id.toHexString(), removeTarget._id)
+    if(!canModify){
+      return false
+    }
+
+    const removePost = await this.postModel.findByIdAndRemove(id, { useFindAndModify: false })
+    if(!removePost){
+      return false
+    }
+    return true
   }
 }

@@ -36,8 +36,10 @@ export class PostsController {
     return this.postsService.update(id, user, updatePostDto);
   }
 
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Roles(userPrivilege.modify)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.postsService.remove(id);
+  remove(@User() user, @Param('id') id: string) {
+    return this.postsService.remove(user, id);
   }
 }
