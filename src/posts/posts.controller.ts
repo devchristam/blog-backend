@@ -4,10 +4,9 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/guard/roles.guard';
-import { userPrivilege } from '../users/schemas/user.schema';
+import { UserDocument, userPrivilege } from '../users/schemas/user.schema';
 import { Roles } from '../auth/decorator/roles.decorator';
 import { User } from '../users/decorator/user.decorator';
-import { jwtUser } from '../auth/dto/jwtUser.dto';
 
 @Controller('posts')
 export class PostsController {
@@ -16,7 +15,7 @@ export class PostsController {
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(userPrivilege.write)
   @Post()
-  create(@User() user: jwtUser, @Body() createPostDto: CreatePostDto) {
+  create(@User() user: UserDocument, @Body() createPostDto: CreatePostDto) {
     return this.postsService.create(user, createPostDto);
   }
 
@@ -33,7 +32,7 @@ export class PostsController {
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(userPrivilege.write)
   @Patch(':id')
-  update(@Param('id') id: string,@User() user: jwtUser, @Body() updatePostDto: UpdatePostDto) {
+  update(@Param('id') id: string,@User() user: UserDocument, @Body() updatePostDto: UpdatePostDto) {
     return this.postsService.update(id, user, updatePostDto);
   }
 

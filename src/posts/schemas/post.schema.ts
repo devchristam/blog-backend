@@ -37,6 +37,14 @@ export class Post {
   createBy: User
 
   @Prop({
+    type: mongooseSchema.Types.ObjectId, ref: 'User'
+  })
+  updateBy: User
+
+  @Prop()
+  updatetime: Date
+
+  @Prop({
     type: mongooseSchema.Types.ObjectId, ref: 'Catalogue'
   })
   catalogue: Category

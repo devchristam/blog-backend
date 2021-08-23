@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { userPrivilege } from '../users/schemas/user.schema';
+import { UserDocument, userPrivilege } from '../users/schemas/user.schema';
 import { UsersService } from '../users/users.service';
 import { jwtPayload } from './dto/JwtPayload.dto';
 
@@ -19,7 +19,7 @@ export class AuthService {
     return null
   }
 
-  async validateJwtUserExist(payload: jwtPayload): Promise<boolean> {
+  async validateJwtUserExist(payload: jwtPayload): Promise<boolean | UserDocument> {
     const user = await this.userService.findOne(payload.sub)
 
     if(!user){
@@ -34,7 +34,7 @@ export class AuthService {
       return false
     }
 
-    return true
+    return user
   }
 
   async valideUserCanModify(userid: string, createby: string): Promise<boolean>{
@@ -44,7 +44,7 @@ export class AuthService {
       return true
     }
 
-    if(user.id === createby){
+    if(user._id.toHexString() === createby){
       return true
     }
 

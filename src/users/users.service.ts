@@ -13,7 +13,7 @@ export class UsersService {
     return this.userModel.find().exec()
   }
 
-  findOne(id: string) {
+  async findOne(id: string): Promise<UserDocument> {
     // This action returns a ${id} user
     return this.userModel.findById(id)
   }
