@@ -7,6 +7,7 @@ import { RolesGuard } from '../auth/guard/roles.guard';
 import { UserDocument, userPrivilege } from '../users/schemas/user.schema';
 import { Roles } from '../auth/decorator/roles.decorator';
 import { User } from '../users/decorator/user.decorator';
+import { findAllQueryDto } from './dto/find-all.dto';
 
 @Controller('posts')
 export class PostsController {
@@ -20,8 +21,8 @@ export class PostsController {
   }
 
   @Get()
-  findAll() {
-    return this.postsService.findAll();
+  findAll(@Query() {skip, limit}: findAllQueryDto) {
+    return this.postsService.findAll(skip, limit);
   }
 
   @Get(':id')

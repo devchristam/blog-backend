@@ -28,11 +28,11 @@ export class PostsService {
     return await this.findOne(_id);
   }
 
-  async findAll(): Promise<PostDocument[]> {
+  async findAll(_skip: number = 0, _limit: number = 0): Promise<PostDocument[]> {
     // This action returns all posts
     return await this.postModel.find({enable: true})
-    .skip(0)
-    .limit(0)
+    .skip(_skip)
+    .limit(_limit)
     .sort({
       createtime: 'asc'
     })
@@ -79,7 +79,7 @@ export class PostsService {
 
   async hardRemove(user: UserDocument ,id: string): Promise<boolean> {
     // This action removes a ${id} post
-    let removeTarget = await this.findOne(id)
+    let removeTarget = await this.postModel.findById(id)
     if(!removeTarget){
       return false
     }
