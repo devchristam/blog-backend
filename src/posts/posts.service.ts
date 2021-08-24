@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, UpdateQuery } from 'mongoose';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { Post, PostDocument } from './schemas/post.schema';
-import { User, UserDocument } from '../users/schemas/user.schema';
+import { User, UserDocument, userPrivilege } from '../users/schemas/user.schema';
 import { Category, CategoryDocument } from '../categories/schemas/category.schema';
 import { AuthService } from '../auth/auth.service';
 
@@ -25,28 +25,42 @@ export class PostsService {
     }
     const createdPost = new this.postModel(createPost);
     const { _id } = await createdPost.save()
-    return await this.postModel.findOne(_id);
+    return await this.findOne(_id);
   }
 
-  async findAll() {
+  async findAll(): Promise<PostDocument[]> {
     // This action returns all posts
-    return await this.postModel.find().exec()
+    return await this.postModel.find({enable: true})
+    .skip(0)
+    .limit(0)
+    .sort({
+      createtime: 'asc'
+    })
+    .exec()
   }
 
-  async findOne(id: string) {
+  async findOne(id: string): Promise<PostDocument> {
     // This action returns a ${id} post
-    return await this.postModel.findById(id)
+    const user = await this.postModel.findOne({
+      _id: id,
+      enable: true
+    }).exec()
+
+    if(!user){
+      throw new NotFoundException()
+    }
+    return user
   }
 
-  async update(id: string, user: UserDocument, updatePostDto: UpdatePostDto) {
+  async update(id: string, user: UserDocument, updatePostDto: UpdatePostDto): Promise<boolean> {
     // This action updates a ${id} post
     let updateTarget = await this.findOne(id)
     if(!updateTarget){
       return false
     }
 
-    let canWrite = await this.authService.valideUserCanModify(user._id.toHexString(), updateTarget._id)
-    if(!canWrite){
+    let canModify = await this.authService.valideUserCanModify(user._id.toHexString(), updateTarget._id)
+    if(!canModify){
       return false
     }
 
@@ -55,13 +69,34 @@ export class PostsService {
       updateBy: user,
       updatetime: new Date
     }
-    const { _id } = await this.postModel.findByIdAndUpdate(id, updatePost, { useFindAndModify: false })
+    const updatedUser = await this.postModel.findByIdAndUpdate(id, updatePost, { useFindAndModify: false })
+    if(!updatedUser){
+      return false
+    }
 
-    return await this.postModel.findById(_id)
+    return true
   }
 
-  async remove(user: UserDocument ,id: string): Promise<boolean> {
+  async hardRemove(user: UserDocument ,id: string): Promise<boolean> {
     // This action removes a ${id} post
+    let removeTarget = await this.findOne(id)
+    if(!removeTarget){
+      return false
+    }
+
+    //hard delete only for admin user
+    if(user.privilege !== userPrivilege.admin){
+      return false
+    }
+
+    const removePost = await this.postModel.findByIdAndRemove(id, { useFindAndModify: false })
+    if(!removePost){
+      return false
+    }
+    return true
+  }
+
+  async softRemove(user: UserDocument ,id: string): Promise<boolean> {
     let removeTarget = await this.findOne(id)
     if(!removeTarget){
       return false
@@ -72,7 +107,7 @@ export class PostsService {
       return false
     }
 
-    const removePost = await this.postModel.findByIdAndRemove(id, { useFindAndModify: false })
+    const removePost = await this.update(id, user, {enable: false})
     if(!removePost){
       return false
     }

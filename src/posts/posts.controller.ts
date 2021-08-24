@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -30,7 +30,7 @@ export class PostsController {
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
-  @Roles(userPrivilege.write)
+  @Roles(userPrivilege.modify)
   @Patch(':id')
   update(@Param('id') id: string,@User() user: UserDocument, @Body() updatePostDto: UpdatePostDto) {
     return this.postsService.update(id, user, updatePostDto);
@@ -39,7 +39,10 @@ export class PostsController {
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(userPrivilege.modify)
   @Delete(':id')
-  remove(@User() user, @Param('id') id: string) {
-    return this.postsService.remove(user, id);
+  remove(@User() user, @Query('hard') hard: string, @Param('id') id: string) {
+    if(hard === "true"){
+      return this.postsService.hardRemove(user, id);
+    }
+    return this.postsService.softRemove(user, id);
   }
 }
