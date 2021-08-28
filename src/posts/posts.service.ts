@@ -30,12 +30,21 @@ export class PostsService {
 
   async findAll(_skip: number = 0, _limit: number = 0): Promise<PostDocument[]> {
     // This action returns all posts
-    return await this.postModel.find({enable: true})
+    return await this.postModel
+    .find({enable: true})
     .skip(_skip)
     .limit(_limit)
     .sort({
       createtime: 'asc'
     })
+    .exec()
+  }
+
+  async findAllTags(): Promise<String[]>{
+    // This action returns all posts
+    return await this.postModel
+    .find({enable: true})
+    .distinct('tags')
     .exec()
   }
 
