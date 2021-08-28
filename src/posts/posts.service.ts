@@ -7,6 +7,7 @@ import { Post, PostDocument } from './schemas/post.schema';
 import { User, UserDocument, userPrivilege } from '../users/schemas/user.schema';
 import { Category, CategoryDocument } from '../categories/schemas/category.schema';
 import { AuthService } from '../auth/auth.service';
+import { findAllPostDto } from './dto/find-all-posts.dto';
 
 @Injectable()
 export class PostsService {
@@ -28,10 +29,19 @@ export class PostsService {
     return await this.findOne(_id);
   }
 
-  async findAll(_skip: number = 0, _limit: number = 0): Promise<PostDocument[]> {
+  async findAll(_skip: number = 0, _limit: number = 0, browseQuery: findAllPostDto): Promise<PostDocument[]> {
     // This action returns all posts
+    let findPostOptions = {
+      tags: { $all: browseQuery.tags },
+      enable: true
+    }
+
+    if(!browseQuery.tags){
+      delete findPostOptions.tags
+    }
+
     return await this.postModel
-    .find({enable: true})
+    .find(findPostOptions)
     .skip(_skip)
     .limit(_limit)
     .sort({

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, Put } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -7,7 +7,8 @@ import { RolesGuard } from '../auth/guard/roles.guard';
 import { UserDocument, userPrivilege } from '../users/schemas/user.schema';
 import { Roles } from '../auth/decorator/roles.decorator';
 import { User } from '../users/decorator/user.decorator';
-import { findAllQueryDto } from './dto/find-all.dto';
+import { findAllPagingDto } from './dto/find-all-paging.dto';
+import { findAllPostDto } from './dto/find-all-posts.dto';
 
 @Controller('posts')
 export class PostsController {
@@ -15,14 +16,14 @@ export class PostsController {
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(userPrivilege.write)
-  @Post()
+  @Put()
   create(@User() user: UserDocument, @Body() createPostDto: CreatePostDto) {
     return this.postsService.create(user, createPostDto);
   }
 
-  @Get()
-  findAll(@Query() {skip, limit}: findAllQueryDto) {
-    return this.postsService.findAll(skip, limit);
+  @Post()
+  findAll(@Query() {skip, limit}: findAllPagingDto, @Body() browseQuery: findAllPostDto) {
+    return this.postsService.findAll(skip, limit, browseQuery);
   }
 
   @Get('/tags')
