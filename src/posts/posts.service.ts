@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotAcceptableException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, UpdateQuery } from 'mongoose';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -25,6 +25,14 @@ export class PostsService {
 
   async create(user: UserDocument, createPostDto: CreatePostDto): Promise<PostDocument> {
     // This action adds a new post
+    const existPost = await this.postModel
+      .find({ title: createPostDto.title })
+      .exec()
+    
+    if(existPost.length !== 0){
+      throw new NotAcceptableException() 
+    }
+
     let createPost = {
       ...createPostDto,
       createBy: user

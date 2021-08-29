@@ -9,7 +9,8 @@ export type PostDocument = Post & Document
 export class Post {
 
   @Prop({
-    required: true
+    required: true,
+    unique: true
   })
   title: string
 
