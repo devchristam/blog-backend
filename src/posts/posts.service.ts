@@ -9,6 +9,11 @@ import { Category, CategoryDocument } from '../categories/schemas/category.schem
 import { AuthService } from '../auth/auth.service';
 import { findAllPostDto } from './dto/find-all-posts.dto';
 
+export interface tagOutput {
+  tag: string;
+  count: number;
+}
+
 @Injectable()
 export class PostsService {
   constructor(
@@ -41,29 +46,36 @@ export class PostsService {
     }
 
     return await this.postModel
-    .find(findPostOptions)
-    .skip(_skip)
-    .limit(_limit)
-    .sort({
-      createtime: 'asc'
-    })
-    .exec()
+      .find(findPostOptions)
+      .skip(_skip)
+      .limit(_limit)
+      .sort({
+        createtime: 'asc'
+      })
+      .exec()
   }
 
-  async findAllTags(): Promise<String[]>{
+  async findAllTags(): Promise<tagOutput[]>{
     // This action returns all posts
     return await this.postModel
-    .find({enable: true})
-    .distinct('tags')
-    .exec()
+      .aggregate([
+        { "$match": { "enable": true } },
+        { "$project": { "tags": 1 } },
+        { "$unwind": "$tags" },
+        { "$group": { "_id": "$tags", "count": { "$sum": 1 } } },
+        { "$sort": { "count": -1, "_id": 1 } },
+        { "$project": { "_id": 0, "tag": "$_id", "count": 1 } },
+      ])
   }
 
   async findOne(id: string): Promise<PostDocument> {
     // This action returns a ${id} post
-    const user = await this.postModel.findOne({
-      _id: id,
-      enable: true
-    }).exec()
+    const user = await this.postModel
+      .findOne({
+        _id: id,
+        enable: true
+      })
+      .exec()
 
     if(!user){
       throw new NotFoundException()
