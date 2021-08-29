@@ -15,9 +15,4 @@ export class CreatePostDto {
   @IsArray()
   @IsString({ each: true })
 	tags: string[]
-
-	@ApiProperty()
-  @IsOptional()
-  @IsString()
-  catalogueID: string
 }
