@@ -6,7 +6,8 @@ export type CategoryDocument = Category & Document
 @Schema()
 export class Category {
   @Prop({
-    required: true
+    required: true,
+    unique: true
   })
   name: string
 
