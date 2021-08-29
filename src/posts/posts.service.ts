@@ -23,7 +23,7 @@ export class PostsService {
     private readonly authService: AuthService
   ) { }
 
-  async create(user: UserDocument, createPostDto: CreatePostDto) {
+  async create(user: UserDocument, createPostDto: CreatePostDto): Promise<PostDocument> {
     // This action adds a new post
     let createPost = {
       ...createPostDto,

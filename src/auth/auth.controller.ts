@@ -1,13 +1,13 @@
-import { Body, Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { userPrivilege } from '../users/schemas/user.schema';
+import { UserDocument, userPrivilege } from '../users/schemas/user.schema';
 import { AuthService } from './auth.service';
-import { LoginDto } from './dto/login.dto';
 import { JwtAuthGuard } from './guard/jwt-auth.guard';
 import { LocalAuthGuard } from './guard/local-auth.guard';
 import { Roles } from './decorator/roles.decorator';
 import { RolesGuard } from './guard/roles.guard';
 import { User } from '../users/decorator/user.decorator';
+import { jwtDto } from './dto/jwt.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -15,20 +15,20 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  login(@Request() req, @Body() user: LoginDto): any {
-    return this.authService.login(req.user)
+  login(@User() user: UserDocument): jwtDto {
+    return this.authService.login(user)
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('protected')
-  getHello(@Request() req, @User() user): string {
+  showUser(@User() user: UserDocument): UserDocument {
     return user;
   }
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(userPrivilege.admin)
   @Get('role')
-  getHello2(@Request() req): string {
-    return 'foobar';
+  showPrivilege(@User() user: UserDocument): userPrivilege {
+    return user.privilege;
   }
 }

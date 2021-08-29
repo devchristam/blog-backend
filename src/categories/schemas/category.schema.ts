@@ -11,6 +11,11 @@ export class Category {
   name: string
 
   @Prop({
+    required: true
+  })
+  tag: string
+
+  @Prop({
     default: true
   })
   enable: boolean
