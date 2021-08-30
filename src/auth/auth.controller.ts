@@ -16,7 +16,7 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   login(@User() user: UserDocument): jwtDto {
-    return this.authService.login(user)
+    return this.authService.login(user);
   }
 
   @UseGuards(JwtAuthGuard)

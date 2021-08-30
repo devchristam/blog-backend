@@ -1,24 +1,24 @@
-import { ApiProperty } from "@nestjs/swagger"
-import { IsNumber, IsString } from "class-validator"
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNumber, IsString } from 'class-validator';
 
 export class jwtPayload {
   @ApiProperty()
   @IsString()
-  name: string
+  name: string;
 
   @ApiProperty()
   @IsString()
-  sub: string
+  sub: string;
 
   @ApiProperty()
   @IsNumber()
-  privilege: number
+  privilege: number;
 
   @ApiProperty()
   @IsNumber()
-  iat: number
+  iat: number;
 
   @ApiProperty()
   @IsNumber()
-  exp: number
+  exp: number;
 }
