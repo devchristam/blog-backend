@@ -7,19 +7,20 @@ import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  let whitelist = ['http://localhost:3000'];
+  const whitelist = ['http://localhost:3000'];
   app.enableCors({
     origin: function (origin, callback) {
       if (whitelist.indexOf(origin) !== -1 || !origin) {
-        console.log("allowed cors for:", origin)
-        callback(null, true)
+        console.log('allowed cors for:', origin);
+        callback(null, true);
       } else {
-        console.log("blocked cors for:", origin)
-        callback(new Error('Not allowed by CORS'))
+        console.log('blocked cors for:', origin);
+        callback(new Error('Not allowed by CORS'));
       }
     },
-    allowedHeaders: 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Observe',
-    methods: "GET,PUT,POST,DELETE,UPDATE,OPTIONS",
+    allowedHeaders:
+      'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept, Observe',
+    methods: 'GET,PUT,POST,DELETE,UPDATE,OPTIONS',
     credentials: true,
   });
   app.use(helmet());
@@ -32,12 +33,14 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
-  app.useGlobalGuards()
-  app.useGlobalPipes(new ValidationPipe({
-    transform: true,
-    whitelist: true,
-    skipMissingProperties: true
-  }));
+  app.useGlobalGuards();
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      skipMissingProperties: true,
+    }),
+  );
   await app.listen(3000);
 }
 bootstrap();

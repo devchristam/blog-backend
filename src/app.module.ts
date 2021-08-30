@@ -19,7 +19,7 @@ import { AuthModule } from './auth/auth.module';
         useNewUrlParser: true,
         useUnifiedTopology: true,
         connectTimeoutMS: 30000,
-        keepAlive: true
+        keepAlive: true,
       }),
       inject: [ConfigService],
     }),
@@ -31,4 +31,4 @@ import { AuthModule } from './auth/auth.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule{}
+export class AppModule {}
