@@ -1,18 +1,17 @@
-import { ApiProperty } from "@nestjs/swagger"
-import { IsBoolean, IsOptional, IsString } from "class-validator"
+import { ApiProperty } from '@nestjs/swagger';
+import { IsBoolean, IsOptional, IsString } from 'class-validator';
 
 export class CreateCategoryDto {
   @ApiProperty()
   @IsString()
-  name: string
+  name: string;
 
   @ApiProperty()
   @IsString()
-  tag: string
+  tag: string;
 
   @ApiProperty()
   @IsBoolean()
   @IsOptional()
-  enable: boolean
+  enable: boolean;
 }
-
