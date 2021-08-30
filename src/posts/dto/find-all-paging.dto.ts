@@ -1,7 +1,7 @@
-import { Type } from "class-transformer";
-import { IsInt, IsOptional } from "class-validator";
+import { Type } from 'class-transformer';
+import { IsInt, IsOptional } from 'class-validator';
 
-export class findAllPagingDto{
+export class findAllPagingDto {
   @IsOptional()
   @IsInt()
   @Type(() => Number)
@@ -12,4 +12,3 @@ export class findAllPagingDto{
   @Type(() => Number)
   skip?: number;
 }
-

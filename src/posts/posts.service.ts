@@ -1,11 +1,22 @@
-import { Injectable, NotAcceptableException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotAcceptableException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, UpdateQuery } from 'mongoose';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { Post, PostDocument } from './schemas/post.schema';
-import { User, UserDocument, userPrivilege } from '../users/schemas/user.schema';
-import { Category, CategoryDocument } from '../categories/schemas/category.schema';
+import {
+  User,
+  UserDocument,
+  userPrivilege,
+} from '../users/schemas/user.schema';
+import {
+  Category,
+  CategoryDocument,
+} from '../categories/schemas/category.schema';
 import { AuthService } from '../auth/auth.service';
 import { findAllPostDto } from './dto/find-all-posts.dto';
 
@@ -20,37 +31,45 @@ export class PostsService {
     @InjectModel(Post.name) private postModel: Model<PostDocument>,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     @InjectModel(Category.name) private categoryModel: Model<CategoryDocument>,
-    private readonly authService: AuthService
-  ) { }
+    private readonly authService: AuthService,
+  ) {}
 
-  async create(user: UserDocument, createPostDto: CreatePostDto): Promise<PostDocument> {
+  async create(
+    user: UserDocument,
+    createPostDto: CreatePostDto,
+  ): Promise<PostDocument> {
     // This action adds a new post
     const existPost = await this.postModel
       .find({ title: createPostDto.title })
-      .exec()
-    
-    if(existPost.length !== 0){
-      throw new NotAcceptableException() 
+      .exec();
+
+    if (existPost.length !== 0) {
+      throw new NotAcceptableException();
     }
 
-    let createPost = {
+    const createPost = {
       ...createPostDto,
-      createBy: user
-    }
+      createBy: user,
+    };
     const createdPost = new this.postModel(createPost);
-    const { _id } = await createdPost.save()
+    const { _id } = await createdPost.save();
     return await this.findOne(_id);
   }
 
-  async findAll(_skip: number = 0, _limit: number = 0, browseQuery: findAllPostDto): Promise<PostDocument[]> {
+  async findAll(
+    _skip = 0,
+    _limit = 0,
+    browseQuery: findAllPostDto,
+  ): Promise<PostDocument[]> {
     // This action returns all posts
+    // eslint-disable-next-line prefer-const
     let findPostOptions = {
       tags: { $all: browseQuery.tags },
-      enable: true
-    }
+      enable: true,
+    };
 
-    if(!browseQuery.tags){
-      delete findPostOptions.tags
+    if (!browseQuery.tags) {
+      delete findPostOptions.tags;
     }
 
     return await this.postModel
@@ -58,22 +77,21 @@ export class PostsService {
       .skip(_skip)
       .limit(_limit)
       .sort({
-        createtime: 'asc'
+        createtime: 'asc',
       })
-      .exec()
+      .exec();
   }
 
-  async findAllTags(): Promise<tagOutput[]>{
+  async findAllTags(): Promise<tagOutput[]> {
     // This action returns all posts
-    return await this.postModel
-      .aggregate([
-        { "$match": { "enable": true } },
-        { "$project": { "tags": 1 } },
-        { "$unwind": "$tags" },
-        { "$group": { "_id": "$tags", "count": { "$sum": 1 } } },
-        { "$sort": { "count": -1, "_id": 1 } },
-        { "$project": { "_id": 0, "tag": "$_id", "count": 1 } },
-      ])
+    return await this.postModel.aggregate([
+      { $match: { enable: true } },
+      { $project: { tags: 1 } },
+      { $unwind: '$tags' },
+      { $group: { _id: '$tags', count: { $sum: 1 } } },
+      { $sort: { count: -1, _id: 1 } },
+      { $project: { _id: 0, tag: '$_id', count: 1 } },
+    ]);
   }
 
   async findOne(id: string): Promise<PostDocument> {
@@ -81,75 +99,89 @@ export class PostsService {
     const user = await this.postModel
       .findOne({
         _id: id,
-        enable: true
+        enable: true,
       })
-      .exec()
+      .exec();
 
-    if(!user){
-      throw new NotFoundException()
+    if (!user) {
+      throw new NotFoundException();
     }
-    return user
+    return user;
   }
 
-  async update(id: string, user: UserDocument, updatePostDto: UpdatePostDto): Promise<boolean> {
+  async update(
+    id: string,
+    user: UserDocument,
+    updatePostDto: UpdatePostDto,
+  ): Promise<boolean> {
     // This action updates a ${id} post
-    let updateTarget = await this.findOne(id)
-    if(!updateTarget){
-      return false
+    const updateTarget = await this.findOne(id);
+    if (!updateTarget) {
+      return false;
     }
 
-    let canModify = await this.authService.valideUserCanModify(user._id.toHexString(), updateTarget._id)
-    if(!canModify){
-      return false
+    const canModify = await this.authService.valideUserCanModify(
+      user._id.toHexString(),
+      updateTarget._id,
+    );
+    if (!canModify) {
+      return false;
     }
 
-    let updatePost: UpdateQuery<PostDocument> = {
+    const updatePost: UpdateQuery<PostDocument> = {
       ...updatePostDto,
       updateBy: user,
-      updatetime: new Date
-    }
-    const updatedUser = await this.postModel.findByIdAndUpdate(id, updatePost, { useFindAndModify: false })
-    if(!updatedUser){
-      return false
+      updatetime: new Date(),
+    };
+    const updatedUser = await this.postModel.findByIdAndUpdate(id, updatePost, {
+      useFindAndModify: false,
+    });
+    if (!updatedUser) {
+      return false;
     }
 
-    return true
+    return true;
   }
 
-  async hardRemove(user: UserDocument ,id: string): Promise<boolean> {
+  async hardRemove(user: UserDocument, id: string): Promise<boolean> {
     // This action removes a ${id} post
-    let removeTarget = await this.postModel.findById(id)
-    if(!removeTarget){
-      return false
+    const removeTarget = await this.postModel.findById(id);
+    if (!removeTarget) {
+      return false;
     }
 
     //hard delete only for admin user
-    if(user.privilege !== userPrivilege.admin){
-      return false
+    if (user.privilege !== userPrivilege.admin) {
+      return false;
     }
 
-    const removePost = await this.postModel.findByIdAndRemove(id, { useFindAndModify: false })
-    if(!removePost){
-      return false
+    const removePost = await this.postModel.findByIdAndRemove(id, {
+      useFindAndModify: false,
+    });
+    if (!removePost) {
+      return false;
     }
-    return true
+    return true;
   }
 
-  async softRemove(user: UserDocument ,id: string): Promise<boolean> {
-    let removeTarget = await this.findOne(id)
-    if(!removeTarget){
-      return false
+  async softRemove(user: UserDocument, id: string): Promise<boolean> {
+    const removeTarget = await this.findOne(id);
+    if (!removeTarget) {
+      return false;
     }
 
-    let canModify = await this.authService.valideUserCanModify(user._id.toHexString(), removeTarget._id)
-    if(!canModify){
-      return false
+    const canModify = await this.authService.valideUserCanModify(
+      user._id.toHexString(),
+      removeTarget._id,
+    );
+    if (!canModify) {
+      return false;
     }
 
-    const removePost = await this.update(id, user, {enable: false})
-    if(!removePost){
-      return false
+    const removePost = await this.update(id, user, { enable: false });
+    if (!removePost) {
+      return false;
     }
-    return true
+    return true;
   }
 }

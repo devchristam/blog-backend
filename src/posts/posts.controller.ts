@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, Put } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  Query,
+  Put,
+} from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -12,7 +23,7 @@ import { findAllPostDto } from './dto/find-all-posts.dto';
 
 @Controller('posts')
 export class PostsController {
-  constructor(private readonly postsService: PostsService) { }
+  constructor(private readonly postsService: PostsService) {}
 
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(userPrivilege.write)
@@ -22,7 +33,10 @@ export class PostsController {
   }
 
   @Post()
-  findAll(@Query() {skip, limit}: findAllPagingDto, @Body() browseQuery: findAllPostDto) {
+  findAll(
+    @Query() { skip, limit }: findAllPagingDto,
+    @Body() browseQuery: findAllPostDto,
+  ) {
     return this.postsService.findAll(skip, limit, browseQuery);
   }
 
@@ -39,7 +53,11 @@ export class PostsController {
   @UseGuards(AuthGuard('jwt'), RolesGuard)
   @Roles(userPrivilege.modify)
   @Patch(':id')
-  update(@Param('id') id: string,@User() user: UserDocument, @Body() updatePostDto: UpdatePostDto) {
+  update(
+    @Param('id') id: string,
+    @User() user: UserDocument,
+    @Body() updatePostDto: UpdatePostDto,
+  ) {
     return this.postsService.update(id, user, updatePostDto);
   }
 
@@ -47,7 +65,7 @@ export class PostsController {
   @Roles(userPrivilege.modify)
   @Delete(':id')
   remove(@User() user, @Query('hard') hard: string, @Param('id') id: string) {
-    if(hard === "true"){
+    if (hard === 'true') {
       return this.postsService.hardRemove(user, id);
     }
     return this.postsService.softRemove(user, id);

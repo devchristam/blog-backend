@@ -1,49 +1,49 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as mongooseSchema } from 'mongoose';
 import { User } from '../../users/schemas/user.schema';
 
-export type PostDocument = Post & Document
+export type PostDocument = Post & Document;
 
 @Schema()
 export class Post {
+  @Prop({
+    required: true,
+    unique: true,
+  })
+  title: string;
 
   @Prop({
     required: true,
-    unique: true
   })
-  title: string
-
-  @Prop({
-    required: true
-  })
-  markdown: string
+  markdown: string;
 
   @Prop()
-  tags: string[]
+  tags: string[];
 
   @Prop({
-    default: Date.now
+    default: Date.now,
   })
-  createtime: Date
+  createtime: Date;
 
   @Prop({
-    default: true
+    default: true,
   })
-  enable: boolean
+  enable: boolean;
 
   @Prop({
-    type: mongooseSchema.Types.ObjectId, ref: 'User'
+    type: mongooseSchema.Types.ObjectId,
+    ref: 'User',
   })
-  createBy: User
+  createBy: User;
 
   @Prop({
-    type: mongooseSchema.Types.ObjectId, ref: 'User'
+    type: mongooseSchema.Types.ObjectId,
+    ref: 'User',
   })
-  updateBy: User
+  updateBy: User;
 
   @Prop()
-  updatetime: Date
-
+  updatetime: Date;
 }
 
-export const PostSchema = SchemaFactory.createForClass(Post)
+export const PostSchema = SchemaFactory.createForClass(Post);
