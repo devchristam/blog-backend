@@ -9,8 +9,8 @@ import {
   UseGuards,
   Query,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { Roles } from '../auth/decorator/roles.decorator';
+import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { RolesGuard } from '../auth/guard/roles.guard';
 import { User } from '../users/decorator/user.decorator';
 import { UserDocument, userPrivilege } from '../users/schemas/user.schema';
@@ -22,7 +22,7 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(userPrivilege.admin)
   @Post()
   create(@Body() createCategoryDto: CreateCategoryDto) {
@@ -39,7 +39,7 @@ export class CategoryController {
     return this.categoryService.findOne(id);
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(userPrivilege.admin)
   @Patch(':id')
   update(
@@ -49,7 +49,7 @@ export class CategoryController {
     return this.categoryService.update(id, updateCategoryDto);
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(userPrivilege.admin)
   @Delete(':id')
   remove(

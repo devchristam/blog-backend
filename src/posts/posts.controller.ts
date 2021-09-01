@@ -13,19 +13,19 @@ import {
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/guard/roles.guard';
 import { UserDocument, userPrivilege } from '../users/schemas/user.schema';
 import { Roles } from '../auth/decorator/roles.decorator';
 import { User } from '../users/decorator/user.decorator';
 import { findAllPagingDto } from './dto/find-all-paging.dto';
 import { findAllPostDto } from './dto/find-all-posts.dto';
+import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(userPrivilege.write)
   @Put()
   create(@User() user: UserDocument, @Body() createPostDto: CreatePostDto) {
@@ -50,7 +50,7 @@ export class PostsController {
     return this.postsService.findOne(id);
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(userPrivilege.modify)
   @Patch(':id')
   update(
@@ -61,7 +61,7 @@ export class PostsController {
     return this.postsService.update(id, user, updatePostDto);
   }
 
-  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(userPrivilege.modify)
   @Delete(':id')
   remove(@User() user, @Query('hard') hard: string, @Param('id') id: string) {
