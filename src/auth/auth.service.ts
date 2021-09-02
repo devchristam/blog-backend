@@ -1,5 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { plainToClass } from 'class-transformer';
+import { CookieOptions, Response } from 'express';
 import { UserDocument, userPrivilege } from '../users/schemas/user.schema';
 import { UsersService } from '../users/users.service';
 import { jwtDto } from './dto/jwt.dto';
@@ -10,6 +13,7 @@ export class AuthService {
   constructor(
     private userService: UsersService,
     private jwtService: JwtService,
+    private configService: ConfigService,
   ) {}
 
   async validateUser(
@@ -62,15 +66,60 @@ export class AuthService {
     return false;
   }
 
-  login(user: UserDocument): jwtDto {
+  async verifyRefreshToken(refreshtoken: string): Promise<jwtDto> {
+    if (refreshtoken === undefined) {
+      throw new UnauthorizedException();
+    }
+
+    const receiveToken = await this.jwtService.verify(refreshtoken);
+    if (!receiveToken) {
+      throw new UnauthorizedException();
+    }
+
+    const user = await this.userService.findOne(receiveToken.userid);
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    return this.createAccessToken(user);
+  }
+
+  async createAccessToken(user: UserDocument): Promise<jwtDto> {
     const payload = {
       name: user.name,
       sub: user.id,
       privilege: user.privilege,
     };
 
-    return {
+    return plainToClass(jwtDto, {
       access_token: this.jwtService.sign(payload),
+      duration: this.configService.get<string>('JWT_TIME'),
+    });
+  }
+
+  async login(user: UserDocument, response: Response): Promise<jwtDto> {
+    const { envHttpOnly, envSecurity } = JSON.parse(
+      this.configService.get<string>('COOKIE_SETTING'),
+    );
+
+    const _cookieOptions: CookieOptions = {
+      expires: new Date(
+        Date.now() +
+          parseInt(this.configService.get<string>('COOKIE_TIME')) * 1000,
+      ),
+      httpOnly: envHttpOnly,
+      secure: envSecurity,
     };
+
+    response.cookie(
+      'blogRefreshToken',
+      this.jwtService.sign(
+        { userid: user._id },
+        { expiresIn: `${this.configService.get<string>('COOKIE_TIME')}s` },
+      ),
+      _cookieOptions,
+    );
+
+    return this.createAccessToken(user);
   }
 }
