@@ -1,47 +1,47 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-export type UserDocument = User & Document
+export type UserDocument = User & Document;
 
-export enum userPrivilege{
+export enum userPrivilege {
   read = 0,
   write = 1,
   modify = 2,
-  admin = 3
+  admin = 3,
 }
 
 @Schema()
 export class User {
   @Prop({
-    required: true
+    required: true,
   })
-  name: string
+  name: string;
 
   @Prop({
     required: true,
-    unique: true
+    unique: true,
   })
-  loginname: string
+  loginname: string;
 
   @Prop({
-    required: true
+    required: true,
   })
-  password: string
+  password: string;
 
   @Prop({
-    default: Date.now
+    default: Date.now,
   })
-  createtime: Date
+  createtime: Date;
 
   @Prop({
-    default: true
+    default: true,
   })
-  enable: boolean
+  enable: boolean;
 
   @Prop({
-    default: userPrivilege.read
+    default: userPrivilege.read,
   })
-  privilege: userPrivilege
+  privilege: userPrivilege;
 }
 
-export const UserSchema = SchemaFactory.createForClass(User)
+export const UserSchema = SchemaFactory.createForClass(User);
