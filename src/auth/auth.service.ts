@@ -1,12 +1,18 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { InjectModel } from '@nestjs/mongoose';
 import { plainToClass } from 'class-transformer';
 import { CookieOptions, Response } from 'express';
+import { Model } from 'mongoose';
 import { UserDocument, userPrivilege } from '../users/schemas/user.schema';
 import { UsersService } from '../users/users.service';
 import { jwtDto } from './dto/jwt.dto';
 import { jwtPayload } from './dto/JwtPayload.dto';
+import {
+  RefreshToken,
+  RefreshTokenDocument,
+} from './schemas/refreshtoken.schema';
 
 @Injectable()
 export class AuthService {
@@ -14,6 +20,8 @@ export class AuthService {
     private userService: UsersService,
     private jwtService: JwtService,
     private configService: ConfigService,
+    @InjectModel(RefreshToken.name)
+    private refreshtokenModel: Model<RefreshTokenDocument>,
   ) {}
 
   async validateUser(
@@ -76,6 +84,16 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
+    const dbFindToken = await this.refreshtokenModel
+      .find({
+        rtoken: refreshtoken,
+      })
+      .exec();
+
+    if (dbFindToken.length !== 1) {
+      throw new UnauthorizedException();
+    }
+
     const user = await this.userService.findOne(receiveToken.userid);
     if (!user) {
       throw new UnauthorizedException();
@@ -111,14 +129,22 @@ export class AuthService {
       secure: envSecurity,
     };
 
-    response.cookie(
-      'blogRefreshToken',
-      this.jwtService.sign(
-        { userid: user._id },
-        { expiresIn: `${this.configService.get<string>('COOKIE_TIME')}s` },
-      ),
-      _cookieOptions,
+    const createRefreshToken = this.jwtService.sign(
+      { userid: user._id },
+      { expiresIn: `${this.configService.get<string>('COOKIE_TIME')}s` },
     );
+
+    const storeRefreshToken = new this.refreshtokenModel({
+      rtoken: createRefreshToken,
+      expiresAt: new Date(
+        Date.now() +
+          parseInt(this.configService.get<string>('COOKIE_TIME')) * 1000,
+      ),
+    });
+
+    await storeRefreshToken.save();
+
+    response.cookie('blogRefreshToken', createRefreshToken, _cookieOptions);
 
     return this.createAccessToken(user);
   }
