@@ -148,4 +148,37 @@ export class AuthService {
 
     return this.createAccessToken(user);
   }
+
+  async removeRefreshToken(refreshtoken: string): Promise<boolean> {
+    if (refreshtoken === undefined) {
+      throw new UnauthorizedException();
+    }
+
+    const receiveToken = await this.jwtService.verify(refreshtoken);
+    if (!receiveToken) {
+      throw new UnauthorizedException();
+    }
+
+    const dbFindToken = await this.refreshtokenModel
+      .find({
+        rtoken: refreshtoken,
+      })
+      .exec();
+
+    if (dbFindToken.length !== 1) {
+      throw new UnauthorizedException();
+    }
+
+    const dbRemoveToken = await this.refreshtokenModel
+      .findOneAndDelete({
+        rtoken: refreshtoken,
+      })
+      .exec();
+
+    if (!dbRemoveToken) {
+      throw new UnauthorizedException();
+    }
+
+    return true;
+  }
 }

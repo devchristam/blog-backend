@@ -38,6 +38,13 @@ export class AuthController {
     });
   }
 
+  @Post('logout')
+  async removeToken(@Cookies('blogRefreshToken') refreshtoken: string) {
+    return this.authService.removeRefreshToken(refreshtoken).catch(() => {
+      throw new NotAcceptableException();
+    });
+  }
+
   @UseGuards(JwtAuthGuard)
   @Get('protected')
   showUser(@User() user: UserDocument): UserDocument {
