@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsBoolean, IsOptional, IsString } from 'class-validator';
 
 export class CreatePostDto {
   @ApiProperty({ required: true })
@@ -15,4 +15,9 @@ export class CreatePostDto {
   @IsArray()
   @IsString({ each: true })
   tags: string[];
+
+  @ApiProperty()
+  @IsOptional()
+  @IsBoolean()
+  enable: boolean;
 }

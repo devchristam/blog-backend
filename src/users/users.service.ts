@@ -1,50 +1,105 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotAcceptableException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserDocument, userPrivilege } from './schemas/user.schema';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-  findAll() {
-    // This action returns all users
-    return this.userModel.find().exec();
+  async create(createUserDto: CreateUserDto): Promise<UserDocument> {
+    createUserDto.password = await bcrypt.hash(createUserDto.password, 10);
+    const createdUser = new this.userModel(createUserDto);
+    const { _id } = await createdUser.save();
+    return await this.findOne(_id);
   }
 
+  async findAll(): Promise<UserDocument[]> {
+    // This action returns all users
+    return await this.userModel.find().exec();
+  }
+
+  // internal only
   async findOne(id: string): Promise<UserDocument> {
-    // This action returns a ${id} user
     return this.userModel.findById(id);
   }
 
-  findByLoginname(loginname: string) {
-    // This action returns a ${id} user
-    return this.userModel.findOne({
+  async findOneRoute(user: UserDocument, id: string): Promise<UserDocument> {
+    const samePerson = user.id === id;
+    const isAdmin = user.privilege === userPrivilege.admin;
+    if (!(samePerson || isAdmin)) {
+      throw new UnauthorizedException();
+    }
+    return await this.userModel.findById(id);
+  }
+
+  // internal only
+  async findByLoginname(loginname: string): Promise<UserDocument> {
+    return await this.userModel.findOne({
       loginname: loginname,
     });
   }
 
-  update(id: string, updateUserDto: UpdateUserDto) {
-    // This action updates a ${id} user
-    return this.userModel.findByIdAndUpdate(id, updateUserDto, {
-      useFindAndModify: false,
-    });
+  // only allow update password
+  async update(
+    user: UserDocument,
+    id: string,
+    updateUserDto: UpdateUserDto,
+  ): Promise<boolean> {
+    const samePerson = user.id === id;
+    const isAdmin = user.privilege === userPrivilege.admin;
+    if (!(samePerson || isAdmin)) {
+      throw new UnauthorizedException();
+    }
+
+    if (!updateUserDto.password) {
+      throw new NotAcceptableException();
+    }
+
+    const newPassword = await bcrypt.hash(updateUserDto.password, 10);
+
+    const updatedUser = await this.userModel.findByIdAndUpdate(
+      id,
+      { password: newPassword },
+      { useFindAndModify: false },
+    );
+
+    if (!updatedUser) {
+      throw new NotAcceptableException();
+    }
+
+    return true;
   }
 
-  remove(id: string) {
-    // This action removes a #${id} user
-    return this.userModel.findByIdAndRemove(id, { useFindAndModify: false });
+  async remove(id: string): Promise<boolean> {
+    const user = await this.userModel.findByIdAndRemove(id, {
+      useFindAndModify: false,
+    });
+
+    if (!user) {
+      throw new NotAcceptableException();
+    }
+
+    return true;
   }
 
   async seeding() {
     const createdUser = new this.userModel({
       name: 'admin',
       loginname: process.env.ADMIN_LOGINNAME,
-      password: process.env.ADMIN_PASSWORD,
+      password: await bcrypt.hash(process.env.ADMIN_PASSWORD, 10),
       enable: true,
       privilege: userPrivilege.admin,
     });
-    return await createdUser.save();
+    return await createdUser.save().catch(() => {
+      throw new NotAcceptableException();
+    });
   }
 }

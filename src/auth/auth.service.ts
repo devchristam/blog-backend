@@ -13,6 +13,7 @@ import {
   RefreshToken,
   RefreshTokenDocument,
 } from './schemas/refreshtoken.schema';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -30,7 +31,13 @@ export class AuthService {
   ): Promise<UserDocument> {
     const user = await this.userService.findByLoginname(loginname);
 
-    if (!user || user.password !== password) {
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+
+    const comparePassword = await bcrypt.compare(password, user.password);
+
+    if (!comparePassword) {
       throw new UnauthorizedException();
     }
 

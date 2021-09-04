@@ -8,15 +8,7 @@ import { Model, UpdateQuery } from 'mongoose';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { Post, PostDocument } from './schemas/post.schema';
-import {
-  User,
-  UserDocument,
-  userPrivilege,
-} from '../users/schemas/user.schema';
-import {
-  Category,
-  CategoryDocument,
-} from '../categories/schemas/category.schema';
+import { UserDocument, userPrivilege } from '../users/schemas/user.schema';
 import { AuthService } from '../auth/auth.service';
 import { findAllPostDto } from './dto/find-all-posts.dto';
 
@@ -29,8 +21,6 @@ export interface tagOutput {
 export class PostsService {
   constructor(
     @InjectModel(Post.name) private postModel: Model<PostDocument>,
-    @InjectModel(User.name) private userModel: Model<UserDocument>,
-    @InjectModel(Category.name) private categoryModel: Model<CategoryDocument>,
     private readonly authService: AuthService,
   ) {}
 

@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Get,
-  NotAcceptableException,
-  Post,
-  Res,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Post, Res, UseGuards } from '@nestjs/common';
 import { UserDocument, userPrivilege } from '../users/schemas/user.schema';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guard/jwt-auth.guard';
@@ -22,27 +15,21 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(
+  login(
     @User() user: UserDocument,
     @Res({ passthrough: true }) response: Response,
   ) {
-    return this.authService.login(user, response).catch(() => {
-      throw new NotAcceptableException();
-    });
+    return this.authService.login(user, response);
   }
 
   @Post('accesstoken')
-  async accessToken(@Cookies('blogRefreshToken') refreshtoken: string) {
-    return this.authService.verifyRefreshToken(refreshtoken).catch(() => {
-      throw new NotAcceptableException();
-    });
+  accessToken(@Cookies('blogRefreshToken') refreshtoken: string) {
+    return this.authService.verifyRefreshToken(refreshtoken);
   }
 
   @Post('logout')
-  async removeToken(@Cookies('blogRefreshToken') refreshtoken: string) {
-    return this.authService.removeRefreshToken(refreshtoken).catch(() => {
-      throw new NotAcceptableException();
-    });
+  removeToken(@Cookies('blogRefreshToken') refreshtoken: string) {
+    return this.authService.removeRefreshToken(refreshtoken);
   }
 
   @UseGuards(JwtAuthGuard)
