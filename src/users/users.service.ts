@@ -18,12 +18,12 @@ export class UsersService {
     createUserDto.password = await bcrypt.hash(createUserDto.password, 10);
     const createdUser = new this.userModel(createUserDto);
     const { _id } = await createdUser.save();
-    return await this.findOne(_id);
+    return await this.userModel.findById(_id).select({ password: 0 }).exec();
   }
 
   async findAll(): Promise<UserDocument[]> {
     // This action returns all users
-    return await this.userModel.find().exec();
+    return await this.userModel.find().select({ password: 0 }).exec();
   }
 
   // internal only
@@ -37,7 +37,12 @@ export class UsersService {
     if (!(samePerson || isAdmin)) {
       throw new UnauthorizedException();
     }
-    return await this.userModel.findById(id);
+    return await this.userModel
+      .findById(id)
+      .select({
+        password: 0,
+      })
+      .exec();
   }
 
   // internal only
