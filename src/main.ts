@@ -8,10 +8,14 @@ import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  const whitelist = ['http://localhost:3000'];
+  const whitelist = JSON.parse(process.env.WHITELIST);
   app.enableCors({
     origin: function (origin, callback) {
-      if (whitelist.indexOf(origin) !== -1 || !origin) {
+      const allowCondition =
+        process.env.ENVIRONMENT === 'PRODUCTION'
+          ? whitelist.indexOf(origin) !== -1
+          : whitelist.indexOf(origin) !== -1 || !origin;
+      if (allowCondition) {
         console.log('allowed cors for:', origin);
         callback(null, true);
       } else {

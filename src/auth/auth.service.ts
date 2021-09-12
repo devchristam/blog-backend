@@ -123,7 +123,7 @@ export class AuthService {
   }
 
   async login(user: UserDocument, response: Response): Promise<jwtDto> {
-    const { envHttpOnly, envSecurity } = JSON.parse(
+    const { envHttpOnly, envSecurity, envDomain, envSameSite } = JSON.parse(
       this.configService.get<string>('COOKIE_SETTING'),
     );
 
@@ -134,6 +134,8 @@ export class AuthService {
       ),
       httpOnly: envHttpOnly,
       secure: envSecurity,
+      domain: envDomain,
+      sameSite: envSameSite,
     };
 
     const createRefreshToken = this.jwtService.sign(
