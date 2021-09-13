@@ -1,4 +1,4 @@
-import { Prop, raw, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
 export type RefreshTokenDocument = RefreshToken & Document;
@@ -11,14 +11,8 @@ export class RefreshToken {
   })
   rtoken: string;
 
-  @Prop(
-    raw({
-      // default: () => new Date(Date.now() + 24 * 60 * 60 * 1000),
-      expires: 0,
-      type: Date,
-    }),
-  )
-  expiresAt: Date;
+  @Prop()
+  endAt: Date;
 
   @Prop({
     default: Date.now(),

@@ -101,6 +101,10 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
+    if (dbFindToken[0].endAt.getTime() < Date.now()) {
+      throw new UnauthorizedException();
+    }
+
     const user = await this.userService.findOne(receiveToken.userid);
     if (!user) {
       throw new UnauthorizedException();
@@ -143,12 +147,12 @@ export class AuthService {
       { expiresIn: `${this.configService.get<string>('COOKIE_TIME')}s` },
     );
 
+    const extraTime =
+      parseInt(this.configService.get<string>('COOKIE_TIME')) * 1000;
+
     const storeRefreshToken = new this.refreshtokenModel({
       rtoken: createRefreshToken,
-      expiresAt: new Date(
-        Date.now() +
-          parseInt(this.configService.get<string>('COOKIE_TIME')) * 1000,
-      ),
+      endAt: new Date(Date.now() + extraTime),
     });
 
     await storeRefreshToken.save();
