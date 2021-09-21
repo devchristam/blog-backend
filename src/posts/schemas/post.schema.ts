@@ -44,6 +44,9 @@ export class Post {
 
   @Prop()
   updatetime: Date;
+
+  @Prop()
+  coverPhotoUrl: string;
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);

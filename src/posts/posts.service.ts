@@ -34,7 +34,10 @@ export class PostsService {
       .exec();
 
     if (existPost.length !== 0) {
-      throw new NotAcceptableException();
+      throw new NotAcceptableException({
+        statusCode: 406,
+        message: 'exist post with same title',
+      });
     }
 
     const createPost = {
@@ -94,7 +97,10 @@ export class PostsService {
       .exec();
 
     if (!user) {
-      throw new NotFoundException();
+      throw new NotFoundException({
+        statusCode: 404,
+        message: 'user not found',
+      });
     }
     return user;
   }
