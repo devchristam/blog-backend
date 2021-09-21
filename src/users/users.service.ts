@@ -65,7 +65,10 @@ export class UsersService {
     }
 
     if (!updateUserDto.password) {
-      throw new NotAcceptableException();
+      throw new NotAcceptableException({
+        statusCode: 406,
+        message: 'please input new password',
+      });
     }
 
     const newPassword = await bcrypt.hash(updateUserDto.password, 10);
@@ -77,7 +80,10 @@ export class UsersService {
     );
 
     if (!updatedUser) {
-      throw new NotAcceptableException();
+      throw new NotAcceptableException({
+        statusCode: 406,
+        message: 'user not found',
+      });
     }
 
     return true;
@@ -89,7 +95,10 @@ export class UsersService {
     });
 
     if (!user) {
-      throw new NotAcceptableException();
+      throw new NotAcceptableException({
+        statusCode: 406,
+        message: 'user not found',
+      });
     }
 
     return true;
@@ -104,7 +113,10 @@ export class UsersService {
       privilege: userPrivilege.admin,
     });
     return await createdUser.save().catch(() => {
-      throw new NotAcceptableException();
+      throw new NotAcceptableException({
+        statusCode: 406,
+        message: 'exist same loginname',
+      });
     });
   }
 }

@@ -25,7 +25,10 @@ export class CategoryService {
       .exec();
 
     if (existCategory.length !== 0) {
-      throw new NotAcceptableException();
+      throw new NotAcceptableException({
+        statusCode: 406,
+        message: 'exist category',
+      });
     }
 
     const createdCategory = new this.categoryModel(createCategoryDto);
@@ -48,7 +51,10 @@ export class CategoryService {
       .exec();
 
     if (!category) {
-      throw new NotFoundException();
+      throw new NotFoundException({
+        statusCode: 404,
+        message: 'category not found',
+      });
     }
     return category;
   }
