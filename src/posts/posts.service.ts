@@ -87,6 +87,12 @@ export class PostsService {
     ]);
   }
 
+  async findCount(): Promise<number> {
+    return await this.postModel.count({
+      enable: true,
+    });
+  }
+
   async findOne(id: string): Promise<PostDocument> {
     // This action returns a ${id} post
     const user = await this.postModel

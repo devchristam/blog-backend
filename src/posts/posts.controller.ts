@@ -45,6 +45,11 @@ export class PostsController {
     return this.postsService.findAllTags();
   }
 
+  @Get('/count')
+  findCount() {
+    return this.postsService.findCount();
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.postsService.findOne(id);
