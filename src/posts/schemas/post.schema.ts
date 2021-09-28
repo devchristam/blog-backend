@@ -17,7 +17,9 @@ export class Post {
   })
   markdown: string;
 
-  @Prop()
+  @Prop({
+    required: true,
+  })
   tags: string[];
 
   @Prop({
@@ -47,6 +49,11 @@ export class Post {
 
   @Prop()
   coverPhotoUrl: string;
+
+  @Prop({
+    required: true,
+  })
+  intro: string;
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);

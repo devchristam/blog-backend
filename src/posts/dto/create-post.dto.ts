@@ -25,4 +25,8 @@ export class CreatePostDto {
   @IsOptional()
   @IsString()
   coverPhotoUrl: string;
+
+  @ApiProperty()
+  @IsString()
+  intro: string;
 }

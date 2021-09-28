@@ -29,6 +29,18 @@ export class PostsService {
     createPostDto: CreatePostDto,
   ): Promise<PostDocument> {
     // This action adds a new post
+    if (
+      !createPostDto.title ||
+      !createPostDto.markdown ||
+      !createPostDto.tags ||
+      !createPostDto.intro
+    ) {
+      throw new NotAcceptableException({
+        statusCode: 406,
+        message: 'missing required field',
+      });
+    }
+
     const existPost = await this.postModel
       .find({ title: createPostDto.title })
       .exec();
@@ -88,7 +100,7 @@ export class PostsService {
   }
 
   async findCount(): Promise<number> {
-    return await this.postModel.count({
+    return await this.postModel.countDocuments({
       enable: true,
     });
   }
