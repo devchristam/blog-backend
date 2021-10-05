@@ -8,7 +8,7 @@ import { Model } from 'mongoose';
 import { UserDocument, userPrivilege } from '../users/schemas/user.schema';
 import { UsersService } from '../users/users.service';
 import { jwtDto } from './dto/jwt.dto';
-import { jwtPayload } from './dto/JwtPayload.dto';
+import { jwtPayload } from './dto/jwtPayload.dto';
 import {
   RefreshToken,
   RefreshTokenDocument,
