@@ -107,20 +107,20 @@ export class PostsService {
 
   async findOne(id: string): Promise<PostDocument> {
     // This action returns a ${id} post
-    const user = await this.postModel
+    const post = await this.postModel
       .findOne({
         _id: id,
         enable: true,
       })
       .exec();
 
-    if (!user) {
+    if (!post) {
       throw new NotFoundException({
         statusCode: 404,
-        message: 'user not found',
+        message: 'post not found',
       });
     }
-    return user;
+    return post;
   }
 
   async update(
