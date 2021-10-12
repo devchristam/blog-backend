@@ -9,6 +9,8 @@ import {
   UseGuards,
   Query,
   Put,
+  UseInterceptors,
+  CacheInterceptor,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -33,6 +35,7 @@ export class PostsController {
   }
 
   @Post()
+  @UseInterceptors(CacheInterceptor)
   findAll(
     @Query() { skip, limit }: findAllPagingDto,
     @Body() browseQuery: findAllPostDto,
@@ -41,16 +44,19 @@ export class PostsController {
   }
 
   @Get('/tags')
+  @UseInterceptors(CacheInterceptor)
   findAllTags() {
     return this.postsService.findAllTags();
   }
 
   @Get('/count')
+  @UseInterceptors(CacheInterceptor)
   findCount() {
     return this.postsService.findCount();
   }
 
   @Get(':id')
+  @UseInterceptors(CacheInterceptor)
   findOne(@Param('id') id: string) {
     return this.postsService.findOne(id);
   }

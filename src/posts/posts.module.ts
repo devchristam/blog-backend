@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { CacheModule, Module } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { PostsController } from './posts.controller';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -18,6 +18,7 @@ import { AuthModule } from '../auth/auth.module';
       { name: Category.name, schema: CategorySchema },
     ]),
     AuthModule,
+    CacheModule.register(),
   ],
   controllers: [PostsController],
   providers: [PostsService],

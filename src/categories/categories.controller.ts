@@ -8,6 +8,8 @@ import {
   Delete,
   UseGuards,
   Query,
+  UseInterceptors,
+  CacheInterceptor,
 } from '@nestjs/common';
 import { Roles } from '../auth/decorator/roles.decorator';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
@@ -30,11 +32,13 @@ export class CategoryController {
   }
 
   @Get()
+  @UseInterceptors(CacheInterceptor)
   findAll() {
     return this.categoryService.findAll();
   }
 
   @Get(':id')
+  @UseInterceptors(CacheInterceptor)
   findOne(@Param('id') id: string) {
     return this.categoryService.findOne(id);
   }
