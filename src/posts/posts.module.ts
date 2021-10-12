@@ -18,7 +18,10 @@ import { AuthModule } from '../auth/auth.module';
       { name: Category.name, schema: CategorySchema },
     ]),
     AuthModule,
-    CacheModule.register(),
+    CacheModule.register({
+      ttl: parseInt(process.env.CACHE_TTL),
+      max: parseInt(process.env.CACHE_MAX_NUM),
+    }),
   ],
   controllers: [PostsController],
   providers: [PostsService],

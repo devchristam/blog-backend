@@ -9,7 +9,10 @@ import { Category, CategorySchema } from './schemas/category.schema';
     MongooseModule.forFeature([
       { name: Category.name, schema: CategorySchema },
     ]),
-    CacheModule.register(),
+    CacheModule.register({
+      ttl: parseInt(process.env.CACHE_TTL),
+      max: parseInt(process.env.CACHE_MAX_NUM),
+    }),
   ],
   controllers: [CategoryController],
   providers: [CategoryService],
