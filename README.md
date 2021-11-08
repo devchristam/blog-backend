@@ -1,6 +1,6 @@
 ## Description
 
-My personal blog backend built by Nest.js
+A RESTful API backend blog system build by Nest.js
 
 ## Installation
 
