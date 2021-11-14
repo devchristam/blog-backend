@@ -82,13 +82,13 @@ export class PostsService {
       .skip(_skip)
       .limit(_limit)
       .sort({
-        createtime: 'asc',
+        createtime: 'desc',
       })
       .exec();
   }
 
   async findAllTags(): Promise<tagOutput[]> {
-    // This action returns all posts
+    // This action returns all tags with posts number
     return await this.postModel.aggregate([
       { $match: { enable: true } },
       { $project: { tags: 1 } },
