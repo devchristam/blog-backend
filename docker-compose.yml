@@ -7,3 +7,12 @@ services:
       - 27017:27017
     volumes:
       - ./tmp/data/db:/data/db
+  blogbe:
+    image: blogbe
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      NODE_ENV: production
+    ports:
+      - 3000:3000
