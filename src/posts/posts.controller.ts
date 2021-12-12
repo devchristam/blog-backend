@@ -75,7 +75,11 @@ export class PostsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(userPrivilege.modify)
   @Delete(':id')
-  remove(@User() user, @Query('hard') hard: string, @Param('id') id: string) {
+  remove(
+    @User() user: UserDocument,
+    @Query('hard') hard: string,
+    @Param('id') id: string,
+  ) {
     if (hard === 'true') {
       return this.postsService.hardRemove(user, id);
     }

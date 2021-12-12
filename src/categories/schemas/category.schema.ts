@@ -9,17 +9,17 @@ export class Category {
     required: true,
     unique: true,
   })
-  name: string;
+  name!: string;
 
   @Prop({
     required: true,
   })
-  tag: string;
+  tag!: string;
 
   @Prop({
     default: true,
   })
-  enable: boolean;
+  enable!: boolean;
 }
 
 export const CategorySchema = SchemaFactory.createForClass(Category);

@@ -19,8 +19,8 @@ import { AuthModule } from '../auth/auth.module';
     ]),
     AuthModule,
     CacheModule.register({
-      ttl: parseInt(process.env.CACHE_TTL),
-      max: parseInt(process.env.CACHE_MAX_NUM),
+      ttl: parseInt(process.env.CACHE_TTL ?? '0'),
+      max: parseInt(process.env.CACHE_MAX_NUM ?? '0'),
     }),
   ],
   controllers: [PostsController],

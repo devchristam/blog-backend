@@ -4,14 +4,14 @@ import { IsBoolean, IsOptional, IsString } from 'class-validator';
 export class CreateCategoryDto {
   @ApiProperty({ required: true })
   @IsString()
-  name: string;
+  name!: string;
 
   @ApiProperty({ required: true })
   @IsString()
-  tag: string;
+  tag!: string;
 
   @ApiProperty()
   @IsBoolean()
   @IsOptional()
-  enable: boolean;
+  enable?: boolean;
 }

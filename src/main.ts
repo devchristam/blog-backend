@@ -8,7 +8,7 @@ import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  const whitelist = JSON.parse(process.env.WHITELIST);
+  const whitelist = JSON.parse(process.env.WHITELIST ?? '[]');
   app.enableCors({
     origin: function (origin, callback) {
       const allowCondition =
@@ -48,6 +48,6 @@ async function bootstrap() {
     }),
   );
   app.use(cookieParser());
-  await app.listen(process.env.PORT);
+  await app.listen(process.env.PORT ?? '3000');
 }
 bootstrap();

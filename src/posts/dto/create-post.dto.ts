@@ -4,29 +4,29 @@ import { IsArray, IsBoolean, IsOptional, IsString } from 'class-validator';
 export class CreatePostDto {
   @ApiProperty({ required: true })
   @IsString()
-  title: string;
+  title!: string;
 
   @ApiProperty({ required: true })
   @IsString()
-  markdown: string;
+  markdown!: string;
 
   @ApiProperty()
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  tags: string[];
+  tags?: string[];
 
   @ApiProperty()
   @IsOptional()
   @IsBoolean()
-  enable: boolean;
+  enable?: boolean;
 
   @ApiProperty()
   @IsOptional()
   @IsString()
-  coverPhotoUrl: string;
+  coverPhotoUrl?: string;
 
   @ApiProperty()
   @IsString()
-  intro: string;
+  intro!: string;
 }

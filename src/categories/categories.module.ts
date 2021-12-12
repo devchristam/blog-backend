@@ -10,8 +10,8 @@ import { Category, CategorySchema } from './schemas/category.schema';
       { name: Category.name, schema: CategorySchema },
     ]),
     CacheModule.register({
-      ttl: parseInt(process.env.CACHE_TTL),
-      max: parseInt(process.env.CACHE_MAX_NUM),
+      ttl: parseInt(process.env.CACHE_TTL ?? '0'),
+      max: parseInt(process.env.CACHE_MAX_NUM ?? '0'),
     }),
   ],
   controllers: [CategoryController],

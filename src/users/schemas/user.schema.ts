@@ -15,33 +15,33 @@ export class User {
   @Prop({
     required: true,
   })
-  name: string;
+  name!: string;
 
   @Prop({
     required: true,
     unique: true,
   })
-  loginname: string;
+  loginname!: string;
 
   @Prop({
     required: true,
   })
-  password: string;
+  password!: string;
 
   @Prop({
     default: Date.now,
   })
-  createtime: Date;
+  createtime!: Date;
 
   @Prop({
     default: true,
   })
-  enable: boolean;
+  enable!: boolean;
 
   @Prop({
     default: userPrivilege.read,
   })
-  privilege: userPrivilege;
+  privilege!: userPrivilege;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -5,20 +5,20 @@ import { userPrivilege } from '../schemas/user.schema';
 export class CreateUserDto {
   @ApiProperty({ required: true })
   @IsString()
-  name: string;
+  name!: string;
 
   @ApiProperty({ required: true })
   @IsString()
-  loginname: string;
+  loginname!: string;
 
   @ApiProperty({ required: true })
   @IsString()
-  password: string;
+  password!: string;
 
   @ApiProperty()
   @IsOptional()
   @IsInt()
   @Min(userPrivilege.read)
   @Max(userPrivilege.admin)
-  privilege: userPrivilege;
+  privilege?: userPrivilege;
 }

@@ -13,6 +13,6 @@
     "incremental": true,
     "forceConsistentCasingInFileNames": true,
     "importHelpers": true,
-    "strict": false
+    "strict": true
   }
 }

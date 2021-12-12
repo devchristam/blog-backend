@@ -6,5 +6,5 @@ export class findAllPostDto {
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  tags: string[];
+  tags?: string[];
 }

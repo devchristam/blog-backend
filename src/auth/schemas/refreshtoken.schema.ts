@@ -9,15 +9,15 @@ export class RefreshToken {
     required: true,
     unique: true,
   })
-  rtoken: string;
+  rtoken!: string;
 
   @Prop()
-  endAt: Date;
+  endAt!: Date;
 
   @Prop({
     default: Date.now(),
   })
-  createAt: Date;
+  createAt!: Date;
 }
 
 export const RefreshTokenSchema = SchemaFactory.createForClass(RefreshToken);

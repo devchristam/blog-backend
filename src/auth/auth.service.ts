@@ -70,6 +70,10 @@ export class AuthService {
   ): Promise<boolean> {
     const user = await this.userService.findOne(userid);
 
+    if (user === null) {
+      return false;
+    }
+
     if (user.privilege == userPrivilege.admin) {
       return true;
     }
@@ -128,13 +132,13 @@ export class AuthService {
 
   async login(user: UserDocument, response: Response): Promise<jwtDto> {
     const { envHttpOnly, envSecurity, envDomain, envSameSite } = JSON.parse(
-      this.configService.get<string>('COOKIE_SETTING'),
+      this.configService.get<string>('COOKIE_SETTING') ?? '',
     );
 
     const _cookieOptions: CookieOptions = {
       expires: new Date(
         Date.now() +
-          parseInt(this.configService.get<string>('COOKIE_TIME')) * 1000,
+          parseInt(this.configService.get<string>('COOKIE_TIME') ?? '0') * 1000,
       ),
       httpOnly: envHttpOnly,
       secure: envSecurity,
@@ -148,7 +152,7 @@ export class AuthService {
     );
 
     const extraTime =
-      parseInt(this.configService.get<string>('COOKIE_TIME')) * 1000;
+      parseInt(this.configService.get<string>('COOKIE_TIME') ?? '0') * 1000;
 
     const storeRefreshToken = new this.refreshtokenModel({
       rtoken: createRefreshToken,

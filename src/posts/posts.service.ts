@@ -67,14 +67,20 @@ export class PostsService {
     browseQuery: findAllPostDto,
   ): Promise<PostDocument[]> {
     // This action returns all posts
-    // eslint-disable-next-line prefer-const
-    let findPostOptions = {
+    const findPostOptions = {
       tags: { $all: browseQuery.tags },
       enable: true,
     };
 
     if (!browseQuery.tags) {
-      delete findPostOptions.tags;
+      return await this.postModel
+        .find({ enable: true })
+        .skip(_skip)
+        .limit(_limit)
+        .sort({
+          createtime: 'desc',
+        })
+        .exec();
     }
 
     return await this.postModel

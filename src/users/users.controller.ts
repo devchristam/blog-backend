@@ -12,7 +12,7 @@ import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { RolesGuard } from '../auth/guard/roles.guard';
-import { userPrivilege } from './schemas/user.schema';
+import { UserDocument, userPrivilege } from './schemas/user.schema';
 import { Roles } from '../auth/decorator/roles.decorator';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './decorator/user.decorator';
@@ -38,7 +38,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(userPrivilege.write)
   @Get(':id')
-  findOne(@User() user, @Param('id') id: string) {
+  findOne(@User() user: UserDocument, @Param('id') id: string) {
     return this.usersService.findOneRoute(user, id);
   }
 
@@ -46,7 +46,7 @@ export class UsersController {
   @Roles(userPrivilege.modify)
   @Patch(':id')
   update(
-    @User() user,
+    @User() user: UserDocument,
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
   ) {

@@ -14,7 +14,7 @@ import * as bcrypt from 'bcrypt';
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-  async create(createUserDto: CreateUserDto): Promise<UserDocument> {
+  async create(createUserDto: CreateUserDto): Promise<UserDocument | null> {
     createUserDto.password = await bcrypt.hash(createUserDto.password, 10);
     const createdUser = new this.userModel(createUserDto);
     const { _id } = await createdUser.save();
@@ -27,11 +27,14 @@ export class UsersService {
   }
 
   // internal only
-  async findOne(id: string): Promise<UserDocument> {
+  async findOne(id: string): Promise<UserDocument | null> {
     return this.userModel.findById(id);
   }
 
-  async findOneRoute(user: UserDocument, id: string): Promise<UserDocument> {
+  async findOneRoute(
+    user: UserDocument,
+    id: string,
+  ): Promise<UserDocument | null> {
     const samePerson = user.id === id;
     const isAdmin = user.privilege === userPrivilege.admin;
     if (!(samePerson || isAdmin)) {
@@ -46,7 +49,7 @@ export class UsersService {
   }
 
   // internal only
-  async findByLoginname(loginname: string): Promise<UserDocument> {
+  async findByLoginname(loginname: string): Promise<UserDocument | null> {
     return await this.userModel.findOne({
       loginname: loginname,
     });
@@ -108,7 +111,7 @@ export class UsersService {
     const createdUser = new this.userModel({
       name: 'admin',
       loginname: process.env.ADMIN_LOGINNAME,
-      password: await bcrypt.hash(process.env.ADMIN_PASSWORD, 10),
+      password: await bcrypt.hash(process.env.ADMIN_PASSWORD ?? '', 10),
       enable: true,
       privilege: userPrivilege.admin,
     });
